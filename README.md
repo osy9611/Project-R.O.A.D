@@ -13,3 +13,5 @@
        + UI 또는 키입력으로 SKillId를 받아 해당되는 스킬을 처리하는 클래스
     + Status, StatusType
        + 오브젝트 Status처리 관련된 클래스 
+    + ComCostumeAgent,PartAsset,PartSlotInfo
+       +Skinned Mesh를 이용한 코스튬 시스템 구현
