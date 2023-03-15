@@ -1,6 +1,7 @@
 namespace Module.Unity.Custermization
 {
-    using System;
+    using Module.Core.Systems;
+    using Module.Core.Systems.Events;
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
@@ -57,20 +58,15 @@ namespace Module.Unity.Custermization
 
         public void ChangeOrAttach(PartAssetData assetData, out PartAssetData? preAssetData)
         {
-            ChangeOrAttach(assetData, null, out preAssetData);
-        }
-
-        public void ChangeOrAttach(PartAssetData assetData, EventArgs args, out PartAssetData? preAssetData)
-        {
             UnityEngine.Assertions.Assert.IsTrue(assetData.PartIndex >= 0 && assetData.PartIndex < slots.Count, "part' index is incorrect");
 
             PartAssetData? oldAssetData = slots[assetData.PartIndex].AssetData;
-            ChangeOrAttach(assetData, args);
+            ChangeOrAttach(assetData);
 
             preAssetData = oldAssetData;
         }
 
-        public void ChangeOrAttach(PartAssetData assetData, EventArgs arg = null)
+        public void ChangeOrAttach(PartAssetData assetData)
         {
             UnityEngine.Assertions.Assert.IsTrue(assetData.PartIndex >= 0 && assetData.PartIndex < slots.Count, "part' index is incorrect");
 
@@ -129,10 +125,34 @@ namespace Module.Unity.Custermization
                     }
                     break;
                 case PartAssetType.Color:
-                    slotInfo.Renderer.material.color = assetData.Color.Value;
+                    if(assetData.Args == null)
+                    {
+                        slotInfo.Renderer.material.color = assetData.Color.Value;
+                    }
+                    else
+                    {
+                        EventArgs<int>? val = assetData.Args as EventArgs<int>?;
+                        if (!val.HasValue)
+                            return;
+                        if (slotInfo.Renderer.materials.Length - 1 < val.Value.Arg1 || val.Value.Arg1 < 0)
+                            return;
+                        slotInfo.Renderer.materials[val.Value.Arg1].color = assetData.Color.Value;
+                    }                   
                     break;
                 case PartAssetType.Material:
-                    slotInfo.Renderer.sharedMaterial = assetData.Material;
+                    if (assetData.Args == null)
+                    {
+                        slotInfo.Renderer.sharedMaterial = assetData.Material;
+                    }
+                    else
+                    {
+                        EventArgs<int>? val = assetData.Args as EventArgs<int>?;
+                        if (!val.HasValue)
+                            return;
+                        if (slotInfo.Renderer.materials.Length - 1 < val.Value.Arg1 || val.Value.Arg1 < 0)
+                            return;
+                        slotInfo.Renderer.sharedMaterials[val.Value.Arg1] = assetData.Material;
+                    }
                     break;
             }
 
